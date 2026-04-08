@@ -102,7 +102,7 @@ questions_part2 = [
 ("Thành kiến tự quy kết (Self-attribution)", "17. Tôi thấy các đầu tư thành công là do tôi, còn thất bại là do lời khuyên người khác."),
 ("Thành kiến giữ nguyên hiện trạng (Status quo)", "18. Khi định thay đổi danh mục, tôi suy nghĩ nhiều nhưng thường ít thay đổi gì cả."),
 ("Quá tự tin (Overconfidence)", "19. Tôi tin rằng kiến thức đầu tư của mình trên mức trung bình."),
-("Lệch lạc khung tâm lý (Framing)", "20. Tôi tin lời khuyên từ các công ty lớn quảng cáo nhiều hơn."),
+("Lệch lạc khung tâm lý (Framing)", "20. Tôi tin lời khuyên từ các công ty lớn quảng cáo nhiều hơn là các công ty nhỏ."),
 ("Thành kiến bảo thủ (Conservatism)", "21. Tôi không dễ dàng thay đổi quan điểm về các khoản đầu tư."),
 ("Thành kiến yêu thích (Affinity)", "22. Tôi đầu tư vào công ty phản ánh giá trị cá nhân."),
 ("Hạch toán tâm trí (Mental Accounting)", "23. Tôi chia khoản đầu tư vào các tài khoản riêng."),
@@ -132,6 +132,35 @@ for i, (bias, q) in enumerate(questions_part2):
     answers_part2[bias].append(val)
 
 # =========================
+# MAPPING BIAS → NHÀ ĐẦU TƯ
+# =========================
+bias_group = {
+    "Lệch lạc neo quyết định (Anchoring)": "Preserver",
+    "Tâm lý sợ thua lỗ (Loss Aversion)": "Preserver",
+    "Hiệu ứng sở hữu (Endowment)": "Preserver",
+    "Thành kiến giữ nguyên hiện trạng (Status quo)": "Preserver",
+    "Hạch toán tâm trí (Mental Accounting)": "Preserver",
+
+    "Lệch lạc thiếu kiểm soát (Self-control)": "Accumulator",
+    "Quá tự tin (Overconfidence)": "Accumulator",
+    "Thành kiến yêu thích (Affinity)": "Accumulator",
+    "Thành kiến kết quả (Outcome)": "Accumulator",
+    "Ảo tưởng kiểm soát (Illusion of Control)": "Accumulator",
+
+    "Lệch lạc sẵn có (Availability)": "Independent",
+    "Thành kiến tự quy kết (Self-attribution)": "Independent",
+    "Thành kiến bảo thủ (Conservatism)": "Independent",
+    "Thành kiến đại diện (Representativeness)": "Independent",
+    "Thành kiến xác nhận (Confirmation)": "Independent",
+
+    "Tâm lý hối tiếc (Regret)": "Follower",
+    "Lệch lạc khung tâm lý (Framing)": "Follower",
+    "Thành kiến nhận thức muộn (Hindsight)": "Follower",
+    "Bất hòa nhận thức (Cognitive Dissonance)": "Follower",
+    "Lệch lạc gần đây (Recency)": "Follower"
+}
+
+# =========================
 # KẾT QUẢ
 # =========================
 if st.button("📌 Xem kết quả"):
@@ -151,29 +180,41 @@ if st.button("📌 Xem kết quả"):
 
     st.subheader(f"👉 Loại nhà đầu tư: {investor_type}")
 
-    # Thiên kiến
-    biases_detected = [b for b, v in answers_part2.items() if max(v) >= 4]
+    # ALL bias
+    all_biases = [b for b, v in answers_part2.items() if max(v) >= 4]
 
-    st.subheader("👉 Thiên kiến hành vi nổi bật:")
-    if biases_detected:
-        for b in biases_detected:
+    # FILTER bias
+    filtered_biases = [b for b in all_biases if bias_group.get(b) == investor_type]
+
+    st.subheader("📌 Tất cả thiên kiến phát hiện:")
+    if all_biases:
+        for b in all_biases:
             st.write(f"- {b}")
     else:
-        st.write("Không phát hiện rõ")
+        st.write("Không phát hiện")
 
-    # Khuyến nghị đầy đủ
+    st.subheader("🎯 Thiên kiến đặc trưng theo loại nhà đầu tư:")
+    if filtered_biases:
+        for b in filtered_biases:
+            st.write(f"- {b}")
+    else:
+        st.write("Không có thiên kiến đặc trưng rõ ràng")
+
+    # =========================
+    # KHUYẾN NGHỊ CHI TIẾT
+    # =========================
     st.subheader("👉 Khuyến nghị:")
 
     recommendations = {
         "Preserver": """
-**Chiến lược tư vấn:** Tập trung mục tiêu bảo vệ tài sản dài hạn  
-**Phân bổ tài sản:** Danh mục thận trọng, ít biến động  
-**Tiếp cận:** Huấn luyện tâm lý để tránh hoảng loạn khi thị trường giảm
+**Chiến lược tư vấn:** Tập trung vào mục tiêu bảo vệ tài sản dài hạn  
+**Phân bổ tài sản:** Danh mục thận trọng, giảm biến động  
+**Tiếp cận:** Huấn luyện hành vi để tránh hoảng loạn khi thị trường giảm
 """,
         "Accumulator": """
 **Chiến lược tư vấn:** Kiểm soát sự tự tin và định hướng dài hạn  
 **Phân bổ tài sản:** Tránh danh mục quá rủi ro  
-**Tiếp cận:** Giám sát giao dịch và kỷ luật tài chính
+**Tiếp cận:** Giám sát giao dịch và tăng kỷ luật tài chính
 """,
         "Independent": """
 **Chiến lược tư vấn:** Đóng vai trò phản biện khách quan  
